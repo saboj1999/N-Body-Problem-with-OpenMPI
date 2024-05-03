@@ -1,5 +1,7 @@
 # N-Body-Problem-with-OpenMPI
 
+https://github.com/saboj1999/N-Body-Problem-with-OpenMPI 
+
 1. Run Tests/test to verify identical output between sequential and parallel versions.
    - cd ./Tests/
    - ./test
