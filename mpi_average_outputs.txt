@@ -1,0 +1,5 @@
+Average Output for 1 './n_body.o 256 10000 ': 16.9480604000
+Average Output for 'mpiexec --oversubscribe -n 2 ./n_body_mpi.o 256 10000 ': 13.3013020000
+Average Output for 'mpiexec --oversubscribe -n 4 ./n_body_mpi.o 256 10000 ': 13.9396404000
+Average Output for 'mpiexec --oversubscribe -n 8 ./n_body_mpi.o 256 10000 ': 15.0091506000
+Average Output for 'mpiexec --oversubscribe -n 16 ./n_body_mpi.o 256 10000 ': 18.6961522000

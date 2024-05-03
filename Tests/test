@@ -1,0 +1,21 @@
+#!/bin/bash
+gcc sequential.c -o sequential.o
+mpicc mpi.c -o mpi.o
+
+for ((j=10; j<=1000; j*=10)); do
+# Run both scripts and redirect output to temporary files
+./sequential.o "$j" "$j" > output1.txt 
+mpiexec -n 2 ./mpi.o "$j" "$j" > output2.txt
+
+# Compare the output files
+if diff output1.txt output2.txt &> /dev/null; then
+    echo "Outputs are identical for $j bodies and $j generations."
+else
+    echo "Outputs are different for $j bodies and $j generations."
+fi
+
+# Clean up temporary files
+rm output1.txt output2.txt
+#done
+done
+rm mpi.o sequential.o

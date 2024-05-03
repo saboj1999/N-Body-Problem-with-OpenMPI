@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Define an array of commands to be executed
+COMMANDS=()
+COMMANDS+=("./n_body.o 256 10000")
+
+# Define the number of times to run each command
+ITERATIONS=5
+
+# Define the output file and clear it
+OUTPUT_FILE="mpi_average_outputs.txt"
+echo -n > "$OUTPUT_FILE"
+
+# Function to append a new command to the list
+append_mpi_command() {
+    # Construct the command with the provided integer arguments
+    if [ "$3" -le 2 ]; then
+        new_command="mpiexec -n $3 ./n_body_mpi.o $1 $2 2>/dev/null"
+    else
+        new_command="mpiexec --oversubscribe -n $3 ./n_body_mpi.o $1 $2 2>/dev/null"
+    fi
+    
+    # Append the command to the array
+    COMMANDS+=("$new_command")
+}
+
+for num in 1 2 4 8 16
+do
+    append_mpi_command 256 10000 "$num"
+done
+
+# Loop through each command in the array
+for command in "${COMMANDS[@]}"; do
+    echo "Running command: $command"
+    
+    # Initialize a variable to store the sum of outputs
+    sum_output=0
+    
+    # Loop through the specified number of iterations for each command
+    for ((i=1; i<=$ITERATIONS; i++)); do
+        # Execute the command, capture its output, and store it in a temporary file
+        output=$(eval "$command")
+        echo "$output" > temp_output.txt
+        
+        # Read the output from the file and add it to the sum
+        output=$(cat temp_output.txt)
+        sum_output=$(echo "scale=10; $sum_output + $output" | bc)
+    done
+    
+    # Calculate the average output for the current command
+    average_output=$(echo "scale=10; $sum_output / $ITERATIONS" | bc)
+    
+    # Print the average output for the current command
+    echo "Average Output for '$command': $average_output"
+    
+    # Write the average output to the output file
+    echo "Average Output for '$command': $average_output" >> "$OUTPUT_FILE"
+    
+    # Clean up temporary files
+    rm temp_output.txt
+    
+    echo # Add a blank line for readability
+done
+
+# Notify the user about the output file
+echo "Average outputs have been written to '$OUTPUT_FILE'"
